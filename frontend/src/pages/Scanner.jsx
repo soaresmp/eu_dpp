@@ -88,14 +88,14 @@ export default function Scanner() {
           <p className="text-xs text-gray-400 mb-2">Try a sample DPP lookup:</p>
           <div className="flex flex-wrap gap-2">
             {[
-              { label: 'Washing Machine', hint: 'Appliance DPP' },
-              { label: 'Solar Panel', hint: 'Electronics DPP' },
-              { label: 'T-Shirt', hint: 'Textile DPP' },
-              { label: 'EV Battery', hint: 'Battery DPP' },
+              { label: 'Washing Machine', uid: 'EU-DPP-2024-PW9000', icon: '🏠' },
+              { label: 'Solar Panel',     uid: 'EU-DPP-2024-SM400',  icon: '⚡' },
+              { label: 'T-Shirt',         uid: 'EU-DPP-2024-EWTS',   icon: '👕' },
+              { label: 'EV Battery',      uid: 'EU-DPP-2024-LP75',   icon: '🔋' },
             ].map(item => (
-              <button key={item.label} onClick={() => loadByName(item.label)}
+              <button key={item.uid} onClick={() => loadById(item.uid)}
                 className="text-xs px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">
-                {item.label} →
+                {item.icon} {item.label} →
               </button>
             ))}
           </div>
@@ -163,21 +163,16 @@ export default function Scanner() {
     </div>
   );
 
-  async function loadByName(name) {
+  async function loadById(uid) {
     setLoading(true);
     setError('');
     setResult(null);
+    setQuery(uid);
     try {
-      const { products } = await api.getProducts({ search: name, limit: 1 });
-      if (products && products[0]) {
-        const product = await api.getProduct(products[0].id);
-        setResult(product);
-        setQuery(products[0].uid);
-      } else {
-        setError('No product found matching that name.');
-      }
+      const product = await api.getProduct(uid);
+      setResult(product);
     } catch {
-      setError('Lookup failed. Please try again.');
+      setError('Product not found. The sample data may not be available in this environment.');
     } finally {
       setLoading(false);
     }
