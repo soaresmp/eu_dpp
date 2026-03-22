@@ -313,7 +313,7 @@ export const staticApi = {
     let filtered = _products;
     if (search) {
       const q = search.toLowerCase();
-      filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.uid.toLowerCase().includes(q) || p.model_number?.toLowerCase().includes(q) || p.manufacturer_name?.toLowerCase().includes(q));
+      filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.uid.toLowerCase().includes(q) || p.model_number?.toLowerCase().includes(q) || p.manufacturer_name?.toLowerCase().includes(q) || p.subcategory?.toLowerCase().includes(q));
     }
     if (category && category !== 'all') filtered = filtered.filter(p => p.category === category);
     if (status && status !== 'all') filtered = filtered.filter(p => p.status === status);

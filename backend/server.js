@@ -70,9 +70,9 @@ app.get('/api/products', (req, res) => {
   let params = [];
 
   if (search) {
-    where.push('(p.name LIKE ? OR p.uid LIKE ? OR p.model_number LIKE ? OR s.name LIKE ?)');
+    where.push('(p.name LIKE ? OR p.uid LIKE ? OR p.model_number LIKE ? OR s.name LIKE ? OR p.subcategory LIKE ?)');
     const q = `%${search}%`;
-    params.push(q, q, q, q);
+    params.push(q, q, q, q, q);
   }
   if (category && category !== 'all') {
     where.push('p.category = ?');
