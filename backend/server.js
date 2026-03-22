@@ -136,7 +136,14 @@ app.get('/api/products/:id', (req, res) => {
     SELECT * FROM compliance_checks WHERE product_id = ? ORDER BY checked_at DESC
   `).all(product.id);
 
-  res.json({ ...product, lifecycle_events: events, documents, compliance_checks: compliance });
+  const epcisRaw = db.prepare(`SELECT * FROM epcis_events WHERE product_id = ? ORDER BY event_time ASC`).all(product.id);
+  const jsonFields = ['epc_list','child_epc_list','input_epc_list','output_epc_list','biz_location','read_point','biz_transactions','source_parties','destination_parties','ilmd','certifications'];
+  const epcis_events = epcisRaw.map(e => {
+    jsonFields.forEach(f => { try { e[f] = JSON.parse(e[f] || (f.endsWith('_list')||f.endsWith('parties')||f.endsWith('transactions') ? '[]' : '{}')); } catch { e[f] = []; } });
+    return e;
+  });
+
+  res.json({ ...product, lifecycle_events: events, documents, compliance_checks: compliance, epcis_events });
 });
 
 app.post('/api/products', (req, res) => {
@@ -276,6 +283,47 @@ app.put('/api/stakeholders/:id', (req, res) => {
     UPDATE stakeholders SET name=?, role=?, email=?, country=?, registration_number=?, address=? WHERE id=?
   `).run(name, role, email, country, registration_number, address, req.params.id);
   res.json({ success: true });
+});
+
+// ─── EPCIS Events ─────────────────────────────────────────────────────────────
+app.get('/api/products/:id/epcis', (req, res) => {
+  const db = getDb();
+  const events = db.prepare(`
+    SELECT * FROM epcis_events WHERE product_id = ? ORDER BY event_time ASC
+  `).all(req.params.id);
+
+  const parsed = events.map(e => {
+    const jsonFields = ['epc_list','child_epc_list','input_epc_list','output_epc_list',
+                        'biz_location','read_point','biz_transactions','source_parties',
+                        'destination_parties','ilmd','certifications'];
+    jsonFields.forEach(f => { try { e[f] = JSON.parse(e[f] || (f.endsWith('_list') || f.endsWith('parties') || f.endsWith('transactions') ? '[]' : '{}')); } catch { e[f] = f.endsWith('_list') || f.endsWith('parties') || f.endsWith('transactions') ? [] : {}; } });
+    return e;
+  });
+  res.json(parsed);
+});
+
+app.post('/api/products/:id/epcis', (req, res) => {
+  const db = getDb();
+  const { event_type, action, biz_step, disposition, event_time, epc_list, child_epc_list,
+          input_epc_list, output_epc_list, biz_location, read_point, biz_transactions,
+          source_parties, destination_parties, ilmd, certifications, notes } = req.body;
+
+  if (!event_type || !action || !biz_step) return res.status(400).json({ error: 'event_type, action, biz_step required' });
+
+  const id = require('uuid').v4();
+  db.prepare(`
+    INSERT INTO epcis_events (id, product_id, event_type, action, biz_step, disposition, event_time,
+      epc_list, child_epc_list, input_epc_list, output_epc_list, biz_location, read_point,
+      biz_transactions, source_parties, destination_parties, ilmd, certifications, notes)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+  `).run(id, req.params.id, event_type, action, biz_step, disposition, event_time || new Date().toISOString(),
+    JSON.stringify(epc_list||[]), JSON.stringify(child_epc_list||[]),
+    JSON.stringify(input_epc_list||[]), JSON.stringify(output_epc_list||[]),
+    JSON.stringify(biz_location||{}), JSON.stringify(read_point||{}),
+    JSON.stringify(biz_transactions||[]), JSON.stringify(source_parties||[]),
+    JSON.stringify(destination_parties||[]), JSON.stringify(ilmd||{}),
+    JSON.stringify(certifications||[]), notes);
+  res.status(201).json({ id });
 });
 
 // ─── Documents ────────────────────────────────────────────────────────────────

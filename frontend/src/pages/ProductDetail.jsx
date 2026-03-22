@@ -8,8 +8,9 @@ import {
 import { api } from '../api.js';
 import StatusBadge from '../components/StatusBadge.jsx';
 import ScoreRing from '../components/ScoreRing.jsx';
+import EpcisTimeline from '../components/EpcisTimeline.jsx';
 
-const TABS = ['Overview', 'Materials', 'Supply Chain', 'Lifecycle', 'Documents', 'Compliance'];
+const BASE_TABS = ['Overview', 'Materials', 'Supply Chain', 'Lifecycle', 'Documents', 'Compliance'];
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -32,6 +33,12 @@ export default function ProductDetail() {
     }
     setShowQR(true);
   };
+
+  const TABS = product
+    ? (product.epcis_events?.length > 0
+        ? [...BASE_TABS, 'EPCIS Trace']
+        : BASE_TABS)
+    : BASE_TABS;
 
   if (loading) return (
     <div className="p-6">
@@ -163,6 +170,11 @@ export default function ProductDetail() {
                     'bg-yellow-100 text-yellow-700'
                   }`}>{product.compliance_checks?.length || 0}</span>
                 )}
+                {t === 'EPCIS Trace' && (
+                  <span className="ml-2 badge text-xs bg-orange-100 text-orange-700">
+                    {product.epcis_events?.length} events
+                  </span>
+                )}
               </button>
             ))}
           </div>
@@ -175,6 +187,7 @@ export default function ProductDetail() {
           {tab === 'Lifecycle' && <LifecycleTab product={product} onAddEvent={() => setAddEventOpen(true)} />}
           {tab === 'Documents' && <DocumentsTab product={product} />}
           {tab === 'Compliance' && <ComplianceTab product={product} />}
+          {tab === 'EPCIS Trace' && <EpcisTraceTab product={product} />}
         </div>
       </div>
 
@@ -501,6 +514,60 @@ function ComplianceTab({ product }) {
           </div>
         ))
       )}
+    </div>
+  );
+}
+
+function EpcisTraceTab({ product }) {
+  const events = product.epcis_events || [];
+
+  // Summarise custody transfers for the header
+  const custodyTransfers = events.filter(e => e.biz_step === 'custody_transfer');
+  const latestSoH = [...events]
+    .reverse()
+    .find(e => e.ilmd?.state_of_health_pct != null)?.ilmd?.state_of_health_pct;
+
+  return (
+    <div className="space-y-5">
+      {/* Header bar */}
+      <div className="bg-orange-50 border border-orange-100 rounded-xl p-4">
+        <div className="flex items-start justify-between flex-wrap gap-3">
+          <div>
+            <h3 className="font-semibold text-orange-900 flex items-center gap-2">
+              GS1 EPCIS 2.0 — Chain of Custody Trace
+            </h3>
+            <p className="text-sm text-orange-700 mt-1">
+              Factual lifecycle events captured per EU Battery Regulation 2023/1542 &amp; ESPR.
+              Each event records what happened, where, when, and who was responsible.
+            </p>
+          </div>
+          <div className="flex gap-3 text-center text-sm shrink-0">
+            <div className="bg-white rounded-lg px-3 py-2 border border-orange-100">
+              <div className="text-xl font-bold text-orange-700">{events.length}</div>
+              <div className="text-xs text-gray-500">Events</div>
+            </div>
+            <div className="bg-white rounded-lg px-3 py-2 border border-orange-100">
+              <div className="text-xl font-bold text-orange-700">{custodyTransfers.length}</div>
+              <div className="text-xs text-gray-500">Custody Transfers</div>
+            </div>
+            {latestSoH != null && (
+              <div className={`rounded-lg px-3 py-2 border ${latestSoH >= 80 ? 'bg-green-50 border-green-100' : 'bg-yellow-50 border-yellow-100'}`}>
+                <div className={`text-xl font-bold ${latestSoH >= 80 ? 'text-green-700' : 'text-yellow-700'}`}>{latestSoH}%</div>
+                <div className="text-xs text-gray-500">Latest SoH</div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* EPCIS standards note */}
+        <div className="mt-3 flex flex-wrap gap-2">
+          {['GS1 EPCIS 2.0', 'EU Battery Reg. 2023/1542', 'ESPR 2024/1781', 'GS1 CBV 2.0'].map(s => (
+            <span key={s} className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">{s}</span>
+          ))}
+        </div>
+      </div>
+
+      <EpcisTimeline events={events} />
     </div>
   );
 }

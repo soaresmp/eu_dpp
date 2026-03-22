@@ -76,6 +76,29 @@ function initSchema() {
       event_date DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
+    CREATE TABLE IF NOT EXISTS epcis_events (
+      id TEXT PRIMARY KEY,
+      product_id TEXT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+      event_type TEXT NOT NULL CHECK(event_type IN ('ObjectEvent','AggregationEvent','TransactionEvent','TransformationEvent','AssociationEvent')),
+      action TEXT NOT NULL CHECK(action IN ('OBSERVE','ADD','DELETE')),
+      biz_step TEXT NOT NULL,
+      disposition TEXT,
+      event_time DATETIME NOT NULL,
+      epc_list TEXT DEFAULT '[]',
+      child_epc_list TEXT DEFAULT '[]',
+      input_epc_list TEXT DEFAULT '[]',
+      output_epc_list TEXT DEFAULT '[]',
+      biz_location TEXT DEFAULT '{}',
+      read_point TEXT DEFAULT '{}',
+      biz_transactions TEXT DEFAULT '[]',
+      source_parties TEXT DEFAULT '[]',
+      destination_parties TEXT DEFAULT '[]',
+      ilmd TEXT DEFAULT '{}',
+      certifications TEXT DEFAULT '[]',
+      notes TEXT,
+      recorded_time DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
     CREATE TABLE IF NOT EXISTS documents (
       id TEXT PRIMARY KEY,
       product_id TEXT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
