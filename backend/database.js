@@ -58,6 +58,9 @@ function initSchema() {
       end_of_life_instructions TEXT,
       spare_parts_availability TEXT CHECK(spare_parts_availability IN ('available','limited','unavailable')),
       status TEXT DEFAULT 'active' CHECK(status IN ('draft','active','recalled','end_of_life')),
+      recall_reason TEXT,
+      recall_date DATETIME,
+      recall_reference TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );

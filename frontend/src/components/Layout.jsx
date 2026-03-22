@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Package, Users, BarChart3, ShieldCheck,
-  QrCode, Menu, X, ChevronRight, Bell, Search
+  QrCode, Menu, X, ChevronRight, Bell, Search, AlertTriangle
 } from 'lucide-react';
 
 const navItems = [
@@ -12,6 +12,7 @@ const navItems = [
   { to: '/compliance', icon: ShieldCheck, label: 'Compliance' },
   { to: '/analytics', icon: BarChart3, label: 'Analytics' },
   { to: '/scanner', icon: QrCode, label: 'DPP Scanner' },
+  { to: '/recalls', icon: AlertTriangle, label: 'Recalls', alert: true },
 ];
 
 export default function Layout() {
@@ -61,7 +62,7 @@ export default function Layout() {
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          {navItems.map(({ to, icon: Icon, label }) => (
+          {navItems.map(({ to, icon: Icon, label, alert }) => (
             <NavLink
               key={to}
               to={to}
@@ -74,8 +75,11 @@ export default function Layout() {
                 }
               `}
             >
-              <Icon size={18} />
-              {label}
+              <Icon size={18} className={alert ? 'text-red-300' : ''} />
+              <span className="flex-1">{label}</span>
+              {alert && (
+                <span className="text-xs bg-red-500 text-white px-1.5 py-0.5 rounded-full font-bold">!</span>
+              )}
             </NavLink>
           ))}
         </nav>

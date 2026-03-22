@@ -168,7 +168,7 @@ export default function Scanner() {
     setError('');
     setResult(null);
     try {
-      const { products } = await fetch(`/api/products?search=${encodeURIComponent(name)}&limit=1`).then(r => r.json());
+      const { products } = await api.getProducts({ search: name, limit: 1 });
       if (products && products[0]) {
         const product = await api.getProduct(products[0].id);
         setResult(product);

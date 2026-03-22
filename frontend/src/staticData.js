@@ -225,6 +225,56 @@ export const PRODUCTS = [
     ],
     created_at: daysAgo(210), updated_at: daysAgo(5),
   },
+  {
+    id: 'prod-heatflow300-005', uid: 'EU-DPP-2024-HF300',
+    name: 'HeatFlow 300 Space Heater', category: 'Appliances', subcategory: 'Heating',
+    manufacturer_id: MFR1_ID, manufacturer_name: 'EcoTech GmbH', manufacturer_country: 'DE',
+    model_number: 'HF-300-EU', batch_number: 'BATCH-2023-H112',
+    description: 'Compact 3000W electric space heater. RECALLED due to overheating risk — fire hazard identified in units from batch BATCH-2023-H112.',
+    carbon_footprint: 98.4, carbon_unit: 'kg CO2e',
+    recyclability_score: 61, repairability_score: 5.5,
+    durability_rating: 'C', energy_class: 'D',
+    warranty_years: 2, expected_lifetime_years: 8,
+    weight_kg: 3.2, country_of_origin: 'DE',
+    spare_parts_availability: 'unavailable', status: 'recalled',
+    recall_reason: 'Overheating defect — internal thermal fuse fails under sustained load, creating fire hazard. Affected batch: BATCH-2023-H112. Do NOT use. Return immediately.',
+    recall_date: daysAgo(14),
+    recall_reference: 'RAPEX-2024-A12-0712-DE',
+    end_of_life_instructions: 'Do not use. Unplug immediately. Return to point of purchase or contact EcoTech GmbH for free collection.',
+    material_composition: [
+      { material: 'Steel Housing', percentage: 55, recycled_content: 25, origin: 'DE' },
+      { material: 'Plastic (ABS)', percentage: 25, recycled_content: 10, origin: 'EU' },
+      { material: 'Copper (Wiring)', percentage: 10, recycled_content: 20, origin: 'EU' },
+      { material: 'Ceramic Element', percentage: 10, recycled_content: 0, origin: 'CN' },
+    ],
+    hazardous_substances: [
+      { name: 'Lead (Pb)', cas: '7439-92-1', concentration_ppm: 0.09, threshold_ppm: 1.0, compliant: true },
+    ],
+    certifications: [
+      { name: 'CE Marking', number: 'CE-2023-DE-3301', issuer: 'TÜV Rheinland', valid_until: '2026-01-01' },
+    ],
+    supply_chain: [
+      { stage: 'Component Manufacturing', location: 'Germany', supplier: 'EcoTech GmbH', carbon_kg: 38.2 },
+      { stage: 'Assembly', location: 'Berlin, Germany', supplier: 'EcoTech GmbH', carbon_kg: 22.1 },
+      { stage: 'Transport', location: 'EU', supplier: 'DHL', carbon_kg: 38.1 },
+    ],
+    lifecycle_events: [
+      { id: 'e20', event_type: 'manufactured', description: 'Manufactured at Berlin facility', location: 'Berlin, Germany', actor_name: 'EcoTech GmbH', actor_role: 'manufacturer', event_date: daysAgo(400) },
+      { id: 'e21', event_type: 'distributed', description: 'Distributed to EU retailers', location: 'EU', actor_name: 'PanEuro Distribution SA', actor_role: 'distributor', event_date: daysAgo(380) },
+      { id: 'e22', event_type: 'sold', description: 'Units sold across EU market', location: 'Various EU countries', actor_name: 'PanEuro Distribution SA', actor_role: 'distributor', event_date: daysAgo(300) },
+      { id: 'e23', event_type: 'recalled', description: 'RAPEX recall issued — overheating / fire hazard in batch BATCH-2023-H112. All units must be returned.', location: 'EU-wide', actor_name: 'EcoTech GmbH', actor_role: 'manufacturer', event_date: daysAgo(14) },
+    ],
+    documents: [
+      { id: 'd12', doc_type: 'safety_sheet', title: 'RAPEX Recall Notice RAPEX-2024-A12-0712-DE', issued_by: 'European Commission', issue_date: new Date(Date.now() - 14 * 86400000).toISOString().slice(0, 10), expiry_date: null },
+      { id: 'd13', doc_type: 'certificate', title: 'CE Certificate (SUSPENDED)', issued_by: 'TÜV Rheinland', issue_date: '2023-06-01', expiry_date: '2026-01-01' },
+    ],
+    compliance_checks: [
+      { id: 'c10', regulation: 'ESPR Regulation (EU) 2024/1781', status: 'non_compliant', checked_by: 'EU Market Surveillance', notes: 'Thermal safety requirements not met — recall initiated', checked_at: daysAgo(14) },
+      { id: 'c11', regulation: 'Low Voltage Directive 2014/35/EU', status: 'non_compliant', checked_by: 'EU Market Surveillance', notes: 'Thermal fuse specification does not meet LVD requirements', checked_at: daysAgo(14) },
+      { id: 'c12', regulation: 'General Product Safety Regulation (EU) 2023/988', status: 'non_compliant', checked_by: 'EU Market Surveillance', notes: 'Product presents serious risk — recall mandatory', checked_at: daysAgo(14) },
+    ],
+    created_at: daysAgo(410), updated_at: daysAgo(14),
+  },
 ];
 
 // ─── Mock API ──────────────────────────────────────────────────────────────────

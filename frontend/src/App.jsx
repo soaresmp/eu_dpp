@@ -9,6 +9,7 @@ import Stakeholders from './pages/Stakeholders.jsx';
 import Analytics from './pages/Analytics.jsx';
 import Compliance from './pages/Compliance.jsx';
 import Scanner from './pages/Scanner.jsx';
+import Recalls from './pages/Recalls.jsx';
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="analytics" element={<Analytics />} />
           <Route path="compliance" element={<Compliance />} />
           <Route path="scanner" element={<Scanner />} />
+          <Route path="recalls" element={<Recalls />} />
         </Route>
       </Routes>
     </HashRouter>
